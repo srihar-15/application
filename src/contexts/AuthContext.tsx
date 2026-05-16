@@ -3,6 +3,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   useMemo,
   useCallback,
   type ReactNode,
@@ -40,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null)
   const [pendingPhone, setPendingPhone] = useState<string | null>(null)
-  const [verifier, setVerifier] = useState<RecaptchaVerifier | null>(null)
+  const verifierRef = useRef<RecaptchaVerifier | null>(null)
 
   // On Firebase auth state change, load user from storage or sync from Firestore.
   useEffect(() => {
@@ -217,14 +218,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setPendingPhone(phoneNumber)
 
-      if (verifier) {
-        try { verifier.clear() } catch { /* ignore */ }
+      if (verifierRef.current) {
+        try { verifierRef.current.clear() } catch { /* ignore */ }
+        verifierRef.current = null
       }
 
       const container = document.getElementById(recaptchaContainerId)
       if (!container) {
         throw new Error(`ReCAPTCHA container '#${recaptchaContainerId}' not found`)
       }
+      container.innerHTML = ''
 
       const newVerifier = new RecaptchaVerifier(auth, recaptchaContainerId, {
         size: 'invisible',
@@ -235,7 +238,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       })
 
-      setVerifier(newVerifier)
+      verifierRef.current = newVerifier
       const result = await signInWithPhoneNumber(auth, phoneNumber, newVerifier)
       setConfirmationResult(result)
       logger.info('auth.otp_sent', { phone: '[redacted]' })
