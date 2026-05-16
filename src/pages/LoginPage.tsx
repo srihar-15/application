@@ -89,8 +89,10 @@ export default function LoginPage() {
     }
   }
 
-  function handleDigitChange(index: number, value: string) {
-    const char = value.replace(/\D/g, '').slice(-1)
+  function handleDigitInput(index: number, e: React.FormEvent<HTMLInputElement>) {
+    // nativeEvent.data is ONLY the newly inserted character — avoids the
+    // double-type bug where onChange fires with old+new value on mobile keyboards.
+    const char = ((e.nativeEvent as InputEvent).data ?? '').replace(/\D/g, '').slice(0, 1)
     const next = [...digits]
     next[index] = char
     setDigits(next)
@@ -102,7 +104,6 @@ export default function LoginPage() {
     }
 
     if (next.join('').length === OTP_LENGTH) {
-      // slight delay so last digit renders before submit
       setTimeout(handleVerifyOTP, 80)
     }
   }
@@ -284,7 +285,8 @@ export default function LoginPage() {
                       inputMode="numeric"
                       maxLength={1}
                       value={digit}
-                      onChange={(e) => handleDigitChange(i, e.target.value)}
+                      onInput={(e) => handleDigitInput(i, e)}
+                      onChange={() => {/* controlled via onInput */}}
                       onKeyDown={(e) => handleDigitKeyDown(i, e)}
                       disabled={verifying}
                       className={cn(
