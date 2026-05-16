@@ -41,3 +41,21 @@ export function generateId(prefix = ''): string {
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
+
+export function getErrorMessage(err: unknown, fallback = 'An error occurred'): string {
+  if (err instanceof Error) return err.message
+  if (typeof err === 'string') return err
+  return fallback
+}
+
+export function getErrorCode(err: unknown): string {
+  if (err && typeof err === 'object' && 'code' in err) return String((err as { code: unknown }).code)
+  return ''
+}
+
+// Normalise any phone string to its trailing 10 digits.
+export function normalizePhone(input: string | null | undefined): string {
+  if (!input) return ''
+  const digits = input.replace(/\D/g, '')
+  return digits.slice(-10)
+}

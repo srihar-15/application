@@ -2,6 +2,7 @@ import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AuthProvider } from '@/contexts/AuthContext'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import './index.css'
@@ -33,9 +34,11 @@ createRoot(rootEl).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ErrorBoundary>
-          <Suspense fallback={<LoadingScreen />}>
-            {isPipelineApp() ? <PipelineApp /> : <CustomerApp />}
-          </Suspense>
+          <AuthProvider>
+            <Suspense fallback={<LoadingScreen />}>
+              {isPipelineApp() ? <PipelineApp /> : <CustomerApp />}
+            </Suspense>
+          </AuthProvider>
         </ErrorBoundary>
       </BrowserRouter>
     </QueryClientProvider>
