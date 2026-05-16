@@ -243,8 +243,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setConfirmationResult(result)
       logger.info('auth.otp_sent', { phone: '[redacted]' })
     } catch (err) {
+      if (verifierRef.current) {
+        try { verifierRef.current.clear() } catch { /* ignore */ }
+        verifierRef.current = null
+      }
       logger.error('auth.send_otp_failed', err)
-      if (getErrorCode(err) === 'auth/argument-error') {
+      const code = getErrorCode(err)
+      if (code === 'auth/too-many-requests') {
+        setError('Too many OTP requests. Please wait a few minutes and try again.')
+      } else if (code === 'auth/invalid-phone-number') {
+        setError('Invalid phone number format.')
+      } else if (code === 'auth/argument-error') {
         setError('Authentication config error. Please refresh and try again.')
       } else {
         setError(getErrorMessage(err, 'Failed to send OTP'))
