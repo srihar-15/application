@@ -38,7 +38,7 @@ Detection happens in `src/main.tsx`. Both apps are lazy-loaded — the admin bun
 | Styling | Tailwind CSS 3 — utility classes only, no inline styles |
 | Animation | Framer Motion |
 | Icons | Lucide React |
-| Backend | Firebase 11 — Auth, Firestore (`asquare-app-db`), Storage |
+| Backend | Firebase 11 — Auth, Firestore (`appsquare`), Storage |
 | Payments | Razorpay (not yet wired) |
 | Notifications | Interakt webhook (not yet wired) |
 | State (server) | TanStack React Query v5 |

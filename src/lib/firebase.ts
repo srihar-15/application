@@ -36,12 +36,12 @@ if (typeof window !== 'undefined') {
 // back to getFirestore if another path beat us.
 let dbInstance
 try {
-  dbInstance = initializeFirestore(app, { experimentalForceLongPolling: true }, 'asquare-app-db')
+  dbInstance = initializeFirestore(app, { experimentalForceLongPolling: true }, 'appsquare')
 } catch (err) {
   logger.warn('firebase.long_polling_init_skipped', {
     reason: err instanceof Error ? err.message : String(err),
   })
-  dbInstance = getFirestore(app, 'asquare-app-db')
+  dbInstance = getFirestore(app, 'appsquare')
 }
 
 export const db = dbInstance
